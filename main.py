@@ -19,7 +19,7 @@ arrayCount = int(arrayCount)
 
 if state == 'TX':
     state = f"""
-Also, here is a short excerpt from the Texas Solar Rights that refers to this issue. “The law also 
+Here is a short excerpt from the Texas Solar Rights that refers to this issue. “The law also 
 stipulates that the HOA may designate where the solar device should be located on a roof,
 unless a homeowner can show that the designation negatively impacts the performance
 of the solar energy device and an alternative location would increase production by
@@ -30,7 +30,7 @@ While not specified by name in the law, one of NREL’s available tools that can
 http://programs.dsireusa.org/system/program/detail/4880"""
 elif state == 'CO':
     state = f"""
-Also, here is a short excerpt from the Colorado House Bill that refers to this issue.
+Here is a short excerpt from the Colorado House Bill that refers to this issue.
 "Section 2 of the act adds specificity to the requirements that HOAs allow installation
 of renewable energy generation devices (e.g solar panels) subject to reasonable
 aesthetic guidelines by requiring approval or denial of a completed application
