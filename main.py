@@ -10,6 +10,8 @@ sheet_name = login.open("HOA")
 tab_lookup = sheet_name.worksheet("10 Percent")
 date = str(tab_lookup.acell("H7").value)
 
+ch = '.'
+
 class customer:
     pass
 
@@ -84,59 +86,20 @@ def arrayOne():
     old_query = customer.address + array.original_tilt + array.original_azimuth + array.losses_original + customer.module_type + customer.array_type + array.system_capacity + api_param + creds.api_key
     new_query = customer.address + array.new_tilt + array.new_azimuth + array.losses_new + customer.module_type + customer.array_type + array.system_capacity_2 + api_param + creds.api_key
 
-    response = requests.get("https://developer.nrel.gov/api/pvwatts/v6.json?" + api_param + creds.api_key)
-    base_url = "https://developer.nrel.gov/api/pvwatts/v6.json?"
+    response_1 = requests.get("https://developer.nrel.gov/api/pvwatts/v6.json?" + api_param + creds.api_key + "&" + old_query)
+    response_2 = requests.get("https://developer.nrel.gov/api/pvwatts/v6.json?" + api_param + creds.api_key + "&" + new_query)
 
-    json_link_original = (base_url + old_query)
-    json_link_new = (base_url + new_query)
-    data_original = requests.get(json_link_original)
-    data_new = requests.get(json_link_new)
+    json_data_1 = (response_1.json())
+    json_data_2 = (response_2.json())
 
-    content = data_original.text
-    data_original = json.loads(content)
-    content = data_new.text
-    data_new = json.loads(content)
+    json_data_1 = int(json_data_1['outputs']['ac_annual'])
+    json_data_2 = int(json_data_2['outputs']['ac_annual'])
 
-    ac_monthly_original = data_original.get('outputs')
-    ac_monthly_new = data_new.get('outputs')
-    dict.items(ac_monthly_original)
-    dict.items(ac_monthly_new)
+    json_data_1 = int(json_data_1)
+    json_data_2 = int(json_data_2)
 
-    del [ac_monthly_original['ac_monthly']]
-    del [ac_monthly_original['poa_monthly']]
-    del [ac_monthly_original['solrad_monthly']]
-    del [ac_monthly_original['dc_monthly']]
-    del [ac_monthly_original['solrad_annual']]
-    del [ac_monthly_original['capacity_factor']]
-    ac_monthly_original = str(ac_monthly_original)
-    ac_monthly_original = ac_monthly_original[14:]
-
-    del [ac_monthly_new['ac_monthly']]
-    del [ac_monthly_new['poa_monthly']]
-    del [ac_monthly_new['solrad_monthly']]
-    del [ac_monthly_new['dc_monthly']]
-    del [ac_monthly_new['solrad_annual']]
-    del [ac_monthly_new['capacity_factor']]
-    ac_monthly_new = str(ac_monthly_new)
-    ac_monthly_new = ac_monthly_new[14:]
-
-    ch = '.'
-    try:
-        ac_monthly_original = ac_monthly_original[0: ac_monthly_original.index(ch)]
-    except ValueError:
-        pass
-
-    ch = '.'
-    try:
-        ac_monthly_new = ac_monthly_new[0: ac_monthly_new.index(ch)]
-    except ValueError:
-        pass
-
-    ac_monthly_original = int(ac_monthly_original)
-    ac_monthly_new = int(ac_monthly_new)
-
-    difference = ac_monthly_original - ac_monthly_new
-    total = difference / ac_monthly_original
+    difference = json_data_1 - json_data_2
+    total = difference / json_data_1
 
     if total <= 0.1:
         total = str(total)
@@ -151,6 +114,9 @@ def arrayOne():
     total = str(total)
     total = total + "%"
 
+    json_data_1 = str(json_data_1)
+    json_data_2 = str(json_data_2)
+
     array.original_tilt = str(tab_lookup.acell("M2").value)
     array.new_tilt = str(tab_lookup.acell("N2").value)
     array.original_azimuth = str(tab_lookup.acell("M3").value)
@@ -163,7 +129,7 @@ def arrayOne():
                'quantity': array.quantity, 'old_direction': array.original_direction, 'quantity2': array.quantity_2, 'state': customer.state,
                'old_azimuth': array.original_azimuth, 'old_tilt': array.original_tilt, 'new_direction': array.new_direction,
                'new_azimuth': array.new_azimuth, 'new_tilt': array.new_tilt, 'mod_watt': array.mod_watt, 'percent': total,
-               'ac_monthly_original': ac_monthly_original, 'ac_monthly_new': ac_monthly_new}
+               'ac_monthly_original': json_data_1.split(ch, 1)[0], 'ac_monthly_new': json_data_2.split(ch, 1)[0]}
 
     doc.render(context)
     doc.save(customer.name + " Ten Percent Letter 1.docx")
@@ -205,59 +171,20 @@ def arrayTwo():
     old_query = customer.address + array.original_tilt + array.original_azimuth + array.losses_original + customer.module_type + customer.array_type + array.system_capacity + api_param + creds.api_key
     new_query = customer.address + array.new_tilt + array.new_azimuth + array.losses_new + customer.module_type + customer.array_type + array.system_capacity_2 + api_param + creds.api_key
 
-    response = requests.get("https://developer.nrel.gov/api/pvwatts/v6.json?" + api_param + creds.api_key)
-    base_url = "https://developer.nrel.gov/api/pvwatts/v6.json?"
+    response_1 = requests.get("https://developer.nrel.gov/api/pvwatts/v6.json?" + api_param + creds.api_key + "&" + old_query)
+    response_2 = requests.get("https://developer.nrel.gov/api/pvwatts/v6.json?" + api_param + creds.api_key + "&" + new_query)
 
-    json_link_original = (base_url + old_query)
-    json_link_new = (base_url + new_query)
-    data_original = requests.get(json_link_original)
-    data_new = requests.get(json_link_new)
+    json_data_1 = (response_1.json())
+    json_data_2 = (response_2.json())
 
-    content = data_original.text
-    data_original = json.loads(content)
-    content = data_new.text
-    data_new = json.loads(content)
+    json_data_1 = int(json_data_1['outputs']['ac_annual'])
+    json_data_2 = int(json_data_2['outputs']['ac_annual'])
 
-    ac_monthly_original = data_original.get('outputs')
-    ac_monthly_new = data_new.get('outputs')
-    dict.items(ac_monthly_original)
-    dict.items(ac_monthly_new)
+    json_data_1 = int(json_data_1)
+    json_data_2 = int(json_data_2)
 
-    del [ac_monthly_original['ac_monthly']]
-    del [ac_monthly_original['poa_monthly']]
-    del [ac_monthly_original['solrad_monthly']]
-    del [ac_monthly_original['dc_monthly']]
-    del [ac_monthly_original['solrad_annual']]
-    del [ac_monthly_original['capacity_factor']]
-    ac_monthly_original = str(ac_monthly_original)
-    ac_monthly_original = ac_monthly_original[14:]
-
-    del [ac_monthly_new['ac_monthly']]
-    del [ac_monthly_new['poa_monthly']]
-    del [ac_monthly_new['solrad_monthly']]
-    del [ac_monthly_new['dc_monthly']]
-    del [ac_monthly_new['solrad_annual']]
-    del [ac_monthly_new['capacity_factor']]
-    ac_monthly_new = str(ac_monthly_new)
-    ac_monthly_new = ac_monthly_new[14:]
-
-    ch = '.'
-    try:
-        ac_monthly_original = ac_monthly_original[0: ac_monthly_original.index(ch)]
-    except ValueError:
-        pass
-
-    ch = '.'
-    try:
-        ac_monthly_new = ac_monthly_new[0: ac_monthly_new.index(ch)]
-    except ValueError:
-        pass
-
-    ac_monthly_original = int(ac_monthly_original)
-    ac_monthly_new = int(ac_monthly_new)
-
-    difference = ac_monthly_original - ac_monthly_new
-    total = difference / ac_monthly_original
+    difference = json_data_1 - json_data_2
+    total = difference / json_data_1
 
     if total <= 0.1:
         total = str(total)
@@ -272,6 +199,9 @@ def arrayTwo():
     total = str(total)
     total = total + "%"
 
+    json_data_1 = str(json_data_1)
+    json_data_2 = str(json_data_2)
+
     array.original_tilt = str(tab_lookup.acell("M9").value)
     array.new_tilt = str(tab_lookup.acell("N9").value)
     array.original_azimuth = str(tab_lookup.acell("M10").value)
@@ -284,7 +214,7 @@ def arrayTwo():
                'quantity': array.quantity, 'old_direction': array.original_direction, 'quantity2': array.quantity_2, 'state': customer.state,
                'old_azimuth': array.original_azimuth, 'old_tilt': array.original_tilt, 'new_direction': array.new_direction,
                'new_azimuth': array.new_azimuth, 'new_tilt': array.new_tilt, 'mod_watt': array.mod_watt, 'percent': total,
-               'ac_monthly_original': ac_monthly_original, 'ac_monthly_new': ac_monthly_new}
+               'ac_monthly_original': json_data_1.split(ch, 1)[0], 'ac_monthly_new': json_data_2.split(ch, 1)[0]}
 
     doc.render(context)
     doc.save(customer.name + " Ten Percent Letter 2.docx")
@@ -326,59 +256,20 @@ def arrayThree():
     old_query = customer.address + array.original_tilt + array.original_azimuth + array.losses_original + customer.module_type + customer.array_type + array.system_capacity + api_param + creds.api_key
     new_query = customer.address + array.new_tilt + array.new_azimuth + array.losses_new + customer.module_type + customer.array_type + array.system_capacity_2 + api_param + creds.api_key
 
-    response = requests.get("https://developer.nrel.gov/api/pvwatts/v6.json?" + api_param + creds.api_key)
-    base_url = "https://developer.nrel.gov/api/pvwatts/v6.json?"
+    response_1 = requests.get("https://developer.nrel.gov/api/pvwatts/v6.json?" + api_param + creds.api_key + "&" + old_query)
+    response_2 = requests.get("https://developer.nrel.gov/api/pvwatts/v6.json?" + api_param + creds.api_key + "&" + new_query)
 
-    json_link_original = (base_url + old_query)
-    json_link_new = (base_url + new_query)
-    data_original = requests.get(json_link_original)
-    data_new = requests.get(json_link_new)
+    json_data_1 = (response_1.json())
+    json_data_2 = (response_2.json())
 
-    content = data_original.text
-    data_original = json.loads(content)
-    content = data_new.text
-    data_new = json.loads(content)
+    json_data_1 = int(json_data_1['outputs']['ac_annual'])
+    json_data_2 = int(json_data_2['outputs']['ac_annual'])
 
-    ac_monthly_original = data_original.get('outputs')
-    ac_monthly_new = data_new.get('outputs')
-    dict.items(ac_monthly_original)
-    dict.items(ac_monthly_new)
+    json_data_1 = int(json_data_1)
+    json_data_2 = int(json_data_2)
 
-    del [ac_monthly_original['ac_monthly']]
-    del [ac_monthly_original['poa_monthly']]
-    del [ac_monthly_original['solrad_monthly']]
-    del [ac_monthly_original['dc_monthly']]
-    del [ac_monthly_original['solrad_annual']]
-    del [ac_monthly_original['capacity_factor']]
-    ac_monthly_original = str(ac_monthly_original)
-    ac_monthly_original = ac_monthly_original[14:]
-
-    del [ac_monthly_new['ac_monthly']]
-    del [ac_monthly_new['poa_monthly']]
-    del [ac_monthly_new['solrad_monthly']]
-    del [ac_monthly_new['dc_monthly']]
-    del [ac_monthly_new['solrad_annual']]
-    del [ac_monthly_new['capacity_factor']]
-    ac_monthly_new = str(ac_monthly_new)
-    ac_monthly_new = ac_monthly_new[14:]
-
-    ch = '.'
-    try:
-        ac_monthly_original = ac_monthly_original[0: ac_monthly_original.index(ch)]
-    except ValueError:
-        pass
-
-    ch = '.'
-    try:
-        ac_monthly_new = ac_monthly_new[0: ac_monthly_new.index(ch)]
-    except ValueError:
-        pass
-
-    ac_monthly_original = int(ac_monthly_original)
-    ac_monthly_new = int(ac_monthly_new)
-
-    difference = ac_monthly_original - ac_monthly_new
-    total = difference / ac_monthly_original
+    difference = json_data_1 - json_data_2
+    total = difference / json_data_1
 
     if total <= 0.1:
         total = str(total)
@@ -393,6 +284,9 @@ def arrayThree():
     total = str(total)
     total = total + "%"
 
+    json_data_1 = str(json_data_1)
+    json_data_2 = str(json_data_2)
+
     array.original_tilt = str(tab_lookup.acell("M16").value)
     array.new_tilt = str(tab_lookup.acell("N16").value)
     array.original_azimuth = str(tab_lookup.acell("M17").value)
@@ -405,7 +299,7 @@ def arrayThree():
                'quantity': array.quantity, 'old_direction': array.original_direction, 'quantity2': array.quantity_2, 'state': customer.state,
                'old_azimuth': array.original_azimuth, 'old_tilt': array.original_tilt, 'new_direction': array.new_direction,
                'new_azimuth': array.new_azimuth, 'new_tilt': array.new_tilt, 'mod_watt': array.mod_watt, 'percent': total,
-               'ac_monthly_original': ac_monthly_original, 'ac_monthly_new': ac_monthly_new}
+               'ac_monthly_original': json_data_1.split(ch, 1)[0], 'ac_monthly_new': json_data_2.split(ch, 1)[0]}
 
     doc.render(context)
     doc.save(customer.name + " Ten Percent Letter 3.docx")
