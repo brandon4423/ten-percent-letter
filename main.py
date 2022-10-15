@@ -12,17 +12,19 @@ date = str(tab_lookup.acell("H7").value)
 
 ch = '.'
 
-class customer:
-    pass
+class Customer:
+    def __init__(self, name, state, hoa_name, address, mod_watt, array_count, module_type, array_type):
+        self.name = name
+        self.state = state
+        self.hoa_name = hoa_name
+        self.address = address
+        self.mod_watt = mod_watt
+        self.array_count = array_count
+        self.module_type = module_type
+        self.array_type = array_type
 
-customer = customer()
-customer.state = str(tab_lookup.acell("D4").value)
-customer.hoa_name = str(tab_lookup.acell("B7").value)
-customer.name = str(tab_lookup.acell("D7").value)
-customer.array_count = int(tab_lookup.acell("J2").value)
-customer.address = str(tab_lookup.acell("B13").value)
-customer.module_type = "1"
-customer.array_type = "1"
+customer = Customer(str(tab_lookup.acell("D7").value), str(tab_lookup.acell("D4").value), str(tab_lookup.acell("B7").value), str(tab_lookup.acell("B13").value)
+                    , float(tab_lookup.acell("F10").value), int(tab_lookup.acell("J2").value), "1", "1")
 
 customer.address = customer.address.replace(" ", "%20").strip()
 customer.address = ("address=" + customer.address + "&")
@@ -56,10 +58,11 @@ else:
 def arrayOne():
     start_time = time.time()
 
-    class array:
-        pass
+    class Array:
+        def __init__(self, ):
+            pass
 
-    array.mod_watt = float(tab_lookup.acell("F10").value)
+    array = Array
     array.original_tilt = str(tab_lookup.acell("M2").value)
     array.new_tilt = str(tab_lookup.acell("N2").value)
     array.original_azimuth = str(tab_lookup.acell("M3").value)
@@ -70,8 +73,8 @@ def arrayOne():
     array.quantity_2 = int(tab_lookup.acell("N5").value)
     array.original_direction = str(tab_lookup.acell("M6").value)
     array.new_direction = str(tab_lookup.acell("N6").value)
-    array.system_capacity = array.mod_watt * array.quantity
-    array.system_capacity_2 = array.mod_watt * array.quantity_2
+    array.system_capacity = customer.mod_watt * array.quantity
+    array.system_capacity_2 = customer.mod_watt * array.quantity_2
 
     array.new_tilt = ("tilt=" + array.new_tilt + "&")
     array.new_azimuth = ("azimuth=" + array.new_azimuth + "&")
@@ -95,41 +98,16 @@ def arrayOne():
     json_data_1 = int(json_data_1['outputs']['ac_annual'])
     json_data_2 = int(json_data_2['outputs']['ac_annual'])
 
-    json_data_1 = int(json_data_1)
-    json_data_2 = int(json_data_2)
-
-    difference = json_data_1 - json_data_2
-    total = difference / json_data_1
-
-    if total <= 0.1:
-        total = str(total)
-        total = total[2:]
-        total = total[:2]
-        total = total[1:]
-    else:
-        total = str(total)
-        total = total[2:]
-        total = total[:2]
-
-    total = str(total)
-    total = total + "%"
-
-    json_data_1 = str(json_data_1)
-    json_data_2 = str(json_data_2)
-
-    array.original_tilt = str(tab_lookup.acell("M2").value)
-    array.new_tilt = str(tab_lookup.acell("N2").value)
-    array.original_azimuth = str(tab_lookup.acell("M3").value)
-    array.new_azimuth = str(tab_lookup.acell("N3").value)
-    array.mod_watt = str(array.mod_watt)
-    array.mod_watt = array.mod_watt.replace("0.", "").strip()
+    difference = int(json_data_1) - int(json_data_2)
+    total = difference / int(json_data_1)
 
     doc = DocxTemplate("TEN_PERCENT_V5.docx")
     context = {'hoa_name': customer.hoa_name, 'date': date, 'name': customer.name,
                'quantity': array.quantity, 'old_direction': array.original_direction, 'quantity2': array.quantity_2, 'state': customer.state,
-               'old_azimuth': array.original_azimuth, 'old_tilt': array.original_tilt, 'new_direction': array.new_direction,
-               'new_azimuth': array.new_azimuth, 'new_tilt': array.new_tilt, 'mod_watt': array.mod_watt, 'percent': total,
-               'ac_monthly_original': json_data_1.split(ch, 1)[0], 'ac_monthly_new': json_data_2.split(ch, 1)[0]}
+               'old_azimuth': array.original_azimuth.replace("azimuth=", ""), 'old_tilt': array.original_tilt.replace("tilt=", ""), 'new_direction': array.new_direction,
+               'new_azimuth': array.new_azimuth.replace("azimuth=", ""), 'new_tilt': array.new_tilt.replace("tilt=", ""), 
+               'mod_watt': str(customer.mod_watt).replace("0.", "").strip(), 'percent': str(total)[2:][:2] + "%",
+               'ac_monthly_original': str(json_data_1).split(ch, 1)[0], 'ac_monthly_new': str(json_data_2).split(ch, 1)[0]}
 
     doc.render(context)
     doc.save(customer.name + " Ten Percent Letter 1.docx")
@@ -141,10 +119,11 @@ def arrayOne():
 def arrayTwo():
     start_time = time.time()
 
-    class array:
-        pass
+    class Array:
+        def __init__(self, ):
+            pass
 
-    array.mod_watt = float(tab_lookup.acell("F10").value)
+    array = Array
     array.original_tilt = str(tab_lookup.acell("M9").value)
     array.new_tilt = str(tab_lookup.acell("N9").value)
     array.original_azimuth = str(tab_lookup.acell("M10").value)
@@ -155,8 +134,8 @@ def arrayTwo():
     array.quantity_2 = int(tab_lookup.acell("N12").value)
     array.original_direction = str(tab_lookup.acell("M13").value)
     array.new_direction = str(tab_lookup.acell("N13").value)
-    array.system_capacity = array.mod_watt * array.quantity
-    array.system_capacity_2 = array.mod_watt * array.quantity_2
+    array.system_capacity = customer.mod_watt * array.quantity
+    array.system_capacity_2 = customer.mod_watt * array.quantity_2
 
     array.new_tilt = ("tilt=" + array.new_tilt + "&")
     array.new_azimuth = ("azimuth=" + array.new_azimuth + "&")
@@ -180,41 +159,16 @@ def arrayTwo():
     json_data_1 = int(json_data_1['outputs']['ac_annual'])
     json_data_2 = int(json_data_2['outputs']['ac_annual'])
 
-    json_data_1 = int(json_data_1)
-    json_data_2 = int(json_data_2)
-
-    difference = json_data_1 - json_data_2
-    total = difference / json_data_1
-
-    if total <= 0.1:
-        total = str(total)
-        total = total[2:]
-        total = total[:2]
-        total = total[1:]
-    else:
-        total = str(total)
-        total = total[2:]
-        total = total[:2]
-
-    total = str(total)
-    total = total + "%"
-
-    json_data_1 = str(json_data_1)
-    json_data_2 = str(json_data_2)
-
-    array.original_tilt = str(tab_lookup.acell("M9").value)
-    array.new_tilt = str(tab_lookup.acell("N9").value)
-    array.original_azimuth = str(tab_lookup.acell("M10").value)
-    array.new_azimuth = str(tab_lookup.acell("N10").value)
-    array.mod_watt = str(array.mod_watt)
-    array.mod_watt = array.mod_watt.replace("0.", "").strip()
+    difference = int(json_data_1) - int(json_data_2)
+    total = difference / int(json_data_1)
 
     doc = DocxTemplate("TEN_PERCENT_V5.docx")
     context = {'hoa_name': customer.hoa_name, 'date': date, 'name': customer.name,
                'quantity': array.quantity, 'old_direction': array.original_direction, 'quantity2': array.quantity_2, 'state': customer.state,
-               'old_azimuth': array.original_azimuth, 'old_tilt': array.original_tilt, 'new_direction': array.new_direction,
-               'new_azimuth': array.new_azimuth, 'new_tilt': array.new_tilt, 'mod_watt': array.mod_watt, 'percent': total,
-               'ac_monthly_original': json_data_1.split(ch, 1)[0], 'ac_monthly_new': json_data_2.split(ch, 1)[0]}
+               'old_azimuth': array.original_azimuth.replace("azimuth=", ""), 'old_tilt': array.original_tilt.replace("tilt=", ""), 'new_direction': array.new_direction,
+               'new_azimuth': array.new_azimuth.replace("azimuth=", ""), 'new_tilt': array.new_tilt.replace("tilt=", ""), 
+               'mod_watt': str(customer.mod_watt).replace("0.", "").strip(), 'percent': str(total)[2:][:2] + "%",
+               'ac_monthly_original': str(json_data_1).split(ch, 1)[0], 'ac_monthly_new': str(json_data_2).split(ch, 1)[0]}
 
     doc.render(context)
     doc.save(customer.name + " Ten Percent Letter 2.docx")
@@ -226,10 +180,11 @@ def arrayTwo():
 def arrayThree():
     start_time = time.time()
 
-    class array:
-        pass
+    class Array:
+        def __init__(self, ):
+            pass
 
-    array.mod_watt = float(tab_lookup.acell("F10").value)
+    array = Array
     array.original_tilt = str(tab_lookup.acell("M16").value)
     array.new_tilt = str(tab_lookup.acell("N16").value)
     array.original_azimuth = str(tab_lookup.acell("M17").value)
@@ -240,8 +195,8 @@ def arrayThree():
     array.quantity_2 = int(tab_lookup.acell("N19").value)
     array.original_direction = str(tab_lookup.acell("M20").value)
     array.new_direction = str(tab_lookup.acell("N20").value)
-    array.system_capacity = array.mod_watt * array.quantity
-    array.system_capacity_2 = array.mod_watt * array.quantity_2
+    array.system_capacity = customer.mod_watt * array.quantity
+    array.system_capacity_2 = customer.mod_watt * array.quantity_2
 
     array.new_tilt = ("tilt=" + array.new_tilt + "&")
     array.new_azimuth = ("azimuth=" + array.new_azimuth + "&")
@@ -265,41 +220,16 @@ def arrayThree():
     json_data_1 = int(json_data_1['outputs']['ac_annual'])
     json_data_2 = int(json_data_2['outputs']['ac_annual'])
 
-    json_data_1 = int(json_data_1)
-    json_data_2 = int(json_data_2)
-
-    difference = json_data_1 - json_data_2
-    total = difference / json_data_1
-
-    if total <= 0.1:
-        total = str(total)
-        total = total[2:]
-        total = total[:2]
-        total = total[1:]
-    else:
-        total = str(total)
-        total = total[2:]
-        total = total[:2]
-
-    total = str(total)
-    total = total + "%"
-
-    json_data_1 = str(json_data_1)
-    json_data_2 = str(json_data_2)
-
-    array.original_tilt = str(tab_lookup.acell("M16").value)
-    array.new_tilt = str(tab_lookup.acell("N16").value)
-    array.original_azimuth = str(tab_lookup.acell("M17").value)
-    array.new_azimuth = str(tab_lookup.acell("N17").value)
-    array.mod_watt = str(array.mod_watt)
-    array.mod_watt = array.mod_watt.replace("0.", "").strip()
+    difference = int(json_data_1) - int(json_data_2)
+    total = difference / int(json_data_1)
 
     doc = DocxTemplate("TEN_PERCENT_V5.docx")
     context = {'hoa_name': customer.hoa_name, 'date': date, 'name': customer.name,
                'quantity': array.quantity, 'old_direction': array.original_direction, 'quantity2': array.quantity_2, 'state': customer.state,
-               'old_azimuth': array.original_azimuth, 'old_tilt': array.original_tilt, 'new_direction': array.new_direction,
-               'new_azimuth': array.new_azimuth, 'new_tilt': array.new_tilt, 'mod_watt': array.mod_watt, 'percent': total,
-               'ac_monthly_original': json_data_1.split(ch, 1)[0], 'ac_monthly_new': json_data_2.split(ch, 1)[0]}
+               'old_azimuth': array.original_azimuth.replace("azimuth=", ""), 'old_tilt': array.original_tilt.replace("tilt=", ""), 'new_direction': array.new_direction,
+               'new_azimuth': array.new_azimuth.replace("azimuth=", ""), 'new_tilt': array.new_tilt.replace("tilt=", ""), 
+               'mod_watt': str(customer.mod_watt).replace("0.", "").strip(), 'percent': str(total)[2:][:2] + "%",
+               'ac_monthly_original': str(json_data_1).split(ch, 1)[0], 'ac_monthly_new': str(json_data_2).split(ch, 1)[0]}
 
     doc.render(context)
     doc.save(customer.name + " Ten Percent Letter 3.docx")
@@ -312,12 +242,9 @@ def main():
     if customer.array_count == 1:
         arrayOne()
     elif customer.array_count == 2:
-        arrayOne()
-        arrayTwo()
+        arrayOne(), arrayTwo()
     elif customer.array_count == 3:
-        arrayOne()
-        arrayTwo()
-        arrayThree()
+        arrayOne(), arrayTwo(), arrayThree()
     else:
         exit()
 
