@@ -1,7 +1,6 @@
 import gspread
 import creds
 import requests
-import json
 import time
 from docxtpl import DocxTemplate
 
@@ -23,13 +22,8 @@ class Customer:
         self.module_type = module_type
         self.array_type = array_type
 
-customer = Customer(str(tab_lookup.acell("D7").value), str(tab_lookup.acell("D4").value), str(tab_lookup.acell("B7").value), str(tab_lookup.acell("B13").value)
-                    , float(tab_lookup.acell("F10").value), int(tab_lookup.acell("J2").value), "1", "1")
-
-customer.address = customer.address.replace(" ", "%20").strip()
-customer.address = ("address=" + customer.address + "&")
-customer.module_type = ("module_type=" + customer.module_type + "&")
-customer.array_type = ("array_type=" + customer.array_type + "&")
+customer = Customer(str(tab_lookup.acell("D7").value), str(tab_lookup.acell("D4").value), str(tab_lookup.acell("B7").value), 
+                    str(tab_lookup.acell("B13").value).replace(" ", "%20").strip(), float(tab_lookup.acell("F10").value), int(tab_lookup.acell("J2").value), "1", "1")
 
 if customer.state == 'TX':
     customer.state = f"""
@@ -58,39 +52,37 @@ else:
 def arrayOne():
     start_time = time.time()
 
-    class Array:
-        def __init__(self, ):
-            pass
+    class Array_1:
+        def __init__(self, tilt, azimuth, losses, quantity, direction):
+            self.tilt = tilt
+            self.azimuth = azimuth
+            self.losses = losses
+            self.quantity = quantity
+            self.direction = direction
+    
+    class Array_2:
+        def __init__(self, tilt, azimuth, losses, quantity, direction):
+            self.tilt = tilt
+            self.azimuth = azimuth
+            self.losses = losses
+            self.quantity = quantity
+            self.direction = direction
 
-    array = Array
-    array.original_tilt = str(tab_lookup.acell("M2").value)
-    array.new_tilt = str(tab_lookup.acell("N2").value)
-    array.original_azimuth = str(tab_lookup.acell("M3").value)
-    array.new_azimuth = str(tab_lookup.acell("N3").value)
-    array.losses_original = str(tab_lookup.acell("M4").value)
-    array.losses_new = str(tab_lookup.acell("N4").value)
-    array.quantity = int(tab_lookup.acell("M5").value)
-    array.quantity_2 = int(tab_lookup.acell("N5").value)
-    array.original_direction = str(tab_lookup.acell("M6").value)
-    array.new_direction = str(tab_lookup.acell("N6").value)
-    array.system_capacity = customer.mod_watt * array.quantity
-    array.system_capacity_2 = customer.mod_watt * array.quantity_2
+    array_1 = Array_1(str(tab_lookup.acell("M2").value), str(tab_lookup.acell("M3").value), str(tab_lookup.acell("M4").value), int(tab_lookup.acell("M5").value)
+                    , str(tab_lookup.acell("M6").value))
 
-    array.new_tilt = ("tilt=" + array.new_tilt + "&")
-    array.new_azimuth = ("azimuth=" + array.new_azimuth + "&")
-    array.original_tilt = ("tilt=" + array.original_tilt + "&")
-    array.original_azimuth = ("azimuth=" + array.original_azimuth + "&")
-    array.losses_original = ("losses=" + array.losses_original + "&")
-    array.losses_new = ("losses=" + array.losses_new + "&")
-    array.system_capacity = ("system_capacity=" + str(array.system_capacity) + "&")
-    array.system_capacity_2 = ("system_capacity=" + str(array.system_capacity_2) + "&")
+    array_2 = Array_2(str(tab_lookup.acell("N2").value), str(tab_lookup.acell("N3").value), str(tab_lookup.acell("N4").value), int(tab_lookup.acell("N5").value)
+                    , str(tab_lookup.acell("N6").value))
 
-    api_param = "&api_key="
-    old_query = customer.address + array.original_tilt + array.original_azimuth + array.losses_original + customer.module_type + customer.array_type + array.system_capacity + api_param + creds.api_key
-    new_query = customer.address + array.new_tilt + array.new_azimuth + array.losses_new + customer.module_type + customer.array_type + array.system_capacity_2 + api_param + creds.api_key
+    system_capacity_1 = customer.mod_watt * array_1.quantity
+    system_capacity_2 = customer.mod_watt * array_2.quantity
 
-    response_1 = requests.get("https://developer.nrel.gov/api/pvwatts/v6.json?" + api_param + creds.api_key + "&" + old_query)
-    response_2 = requests.get("https://developer.nrel.gov/api/pvwatts/v6.json?" + api_param + creds.api_key + "&" + new_query)
+    api_param = "&api_key=" + creds.api_key
+    old_query = (f"{api_param}&address={customer.address}&tilt={array_1.tilt}&azimuth={array_1.azimuth}&losses={array_1.losses}&module_type={customer.module_type}&array_type={customer.array_type}&system_capacity={system_capacity_1}")
+    new_query = (f"{api_param}&address={customer.address}&tilt={array_2.tilt}&azimuth={array_2.azimuth}&losses={array_2.losses}&module_type={customer.module_type}&array_type={customer.array_type}&system_capacity={system_capacity_2}")
+
+    response_1 = requests.get("https://developer.nrel.gov/api/pvwatts/v6.json?" + old_query)
+    response_2 = requests.get("https://developer.nrel.gov/api/pvwatts/v6.json?" + new_query)
 
     json_data_1 = (response_1.json())
     json_data_2 = (response_2.json())
@@ -103,9 +95,9 @@ def arrayOne():
 
     doc = DocxTemplate("TEN_PERCENT_V5.docx")
     context = {'hoa_name': customer.hoa_name, 'date': date, 'name': customer.name,
-               'quantity': array.quantity, 'old_direction': array.original_direction, 'quantity2': array.quantity_2, 'state': customer.state,
-               'old_azimuth': array.original_azimuth.replace("azimuth=", ""), 'old_tilt': array.original_tilt.replace("tilt=", ""), 'new_direction': array.new_direction,
-               'new_azimuth': array.new_azimuth.replace("azimuth=", ""), 'new_tilt': array.new_tilt.replace("tilt=", ""), 
+               'quantity': array_1.quantity, 'old_direction': array_1.direction, 'quantity2': array_2.quantity, 'state': customer.state,
+               'old_azimuth': array_1.azimuth.replace("azimuth=", ""), 'old_tilt': array_1.tilt.replace("tilt=", ""), 'new_direction': array_2.direction,
+               'new_azimuth': array_2.azimuth.replace("azimuth=", ""), 'new_tilt': array_2.tilt.replace("tilt=", ""), 
                'mod_watt': str(customer.mod_watt).replace("0.", "").strip(), 'percent': str(total)[2:][:2] + "%",
                'ac_monthly_original': str(json_data_1).split(ch, 1)[0], 'ac_monthly_new': str(json_data_2).split(ch, 1)[0]}
 
@@ -119,39 +111,37 @@ def arrayOne():
 def arrayTwo():
     start_time = time.time()
 
-    class Array:
-        def __init__(self, ):
-            pass
+    class Array_1:
+        def __init__(self, tilt, azimuth, losses, quantity, direction):
+            self.tilt = tilt
+            self.azimuth = azimuth
+            self.losses = losses
+            self.quantity = quantity
+            self.direction = direction
+    
+    class Array_2:
+        def __init__(self, tilt, azimuth, losses, quantity, direction):
+            self.tilt = tilt
+            self.azimuth = azimuth
+            self.losses = losses
+            self.quantity = quantity
+            self.direction = direction
 
-    array = Array
-    array.original_tilt = str(tab_lookup.acell("M9").value)
-    array.new_tilt = str(tab_lookup.acell("N9").value)
-    array.original_azimuth = str(tab_lookup.acell("M10").value)
-    array.new_azimuth = str(tab_lookup.acell("N10").value)
-    array.losses_original = str(tab_lookup.acell("M11").value)
-    array.losses_new = str(tab_lookup.acell("N11").value)
-    array.quantity = int(tab_lookup.acell("M12").value)
-    array.quantity_2 = int(tab_lookup.acell("N12").value)
-    array.original_direction = str(tab_lookup.acell("M13").value)
-    array.new_direction = str(tab_lookup.acell("N13").value)
-    array.system_capacity = customer.mod_watt * array.quantity
-    array.system_capacity_2 = customer.mod_watt * array.quantity_2
+    array_1 = Array_1(str(tab_lookup.acell("M9").value), str(tab_lookup.acell("M10").value), str(tab_lookup.acell("M11").value), int(tab_lookup.acell("M12").value)
+                    , str(tab_lookup.acell("M13").value))
 
-    array.new_tilt = ("tilt=" + array.new_tilt + "&")
-    array.new_azimuth = ("azimuth=" + array.new_azimuth + "&")
-    array.original_tilt = ("tilt=" + array.original_tilt + "&")
-    array.original_azimuth = ("azimuth=" + array.original_azimuth + "&")
-    array.losses_original = ("losses=" + array.losses_original + "&")
-    array.losses_new = ("losses=" + array.losses_new + "&")
-    array.system_capacity = ("system_capacity=" + str(array.system_capacity) + "&")
-    array.system_capacity_2 = ("system_capacity=" + str(array.system_capacity_2) + "&")
+    array_2 = Array_2(str(tab_lookup.acell("N9").value), str(tab_lookup.acell("N10").value), str(tab_lookup.acell("N11").value), int(tab_lookup.acell("N12").value)
+                    , str(tab_lookup.acell("N13").value))
 
-    api_param = "&api_key="
-    old_query = customer.address + array.original_tilt + array.original_azimuth + array.losses_original + customer.module_type + customer.array_type + array.system_capacity + api_param + creds.api_key
-    new_query = customer.address + array.new_tilt + array.new_azimuth + array.losses_new + customer.module_type + customer.array_type + array.system_capacity_2 + api_param + creds.api_key
+    system_capacity_1 = customer.mod_watt * array_1.quantity
+    system_capacity_2 = customer.mod_watt * array_2.quantity
 
-    response_1 = requests.get("https://developer.nrel.gov/api/pvwatts/v6.json?" + api_param + creds.api_key + "&" + old_query)
-    response_2 = requests.get("https://developer.nrel.gov/api/pvwatts/v6.json?" + api_param + creds.api_key + "&" + new_query)
+    api_param = "&api_key=" + creds.api_key
+    old_query = (f"{api_param}&address={customer.address}&tilt={array_1.tilt}&azimuth={array_1.azimuth}&losses={array_1.losses}&module_type={customer.module_type}&array_type={customer.array_type}&system_capacity={system_capacity_1}")
+    new_query = (f"{api_param}&address={customer.address}&tilt={array_2.tilt}&azimuth={array_2.azimuth}&losses={array_2.losses}&module_type={customer.module_type}&array_type={customer.array_type}&system_capacity={system_capacity_2}")
+
+    response_1 = requests.get("https://developer.nrel.gov/api/pvwatts/v6.json?" + old_query)
+    response_2 = requests.get("https://developer.nrel.gov/api/pvwatts/v6.json?" + new_query)
 
     json_data_1 = (response_1.json())
     json_data_2 = (response_2.json())
@@ -164,9 +154,9 @@ def arrayTwo():
 
     doc = DocxTemplate("TEN_PERCENT_V5.docx")
     context = {'hoa_name': customer.hoa_name, 'date': date, 'name': customer.name,
-               'quantity': array.quantity, 'old_direction': array.original_direction, 'quantity2': array.quantity_2, 'state': customer.state,
-               'old_azimuth': array.original_azimuth.replace("azimuth=", ""), 'old_tilt': array.original_tilt.replace("tilt=", ""), 'new_direction': array.new_direction,
-               'new_azimuth': array.new_azimuth.replace("azimuth=", ""), 'new_tilt': array.new_tilt.replace("tilt=", ""), 
+               'quantity': array_1.quantity, 'old_direction': array_1.direction, 'quantity2': array_2.quantity, 'state': customer.state,
+               'old_azimuth': array_1.azimuth.replace("azimuth=", ""), 'old_tilt': array_1.tilt.replace("tilt=", ""), 'new_direction': array_2.direction,
+               'new_azimuth': array_2.azimuth.replace("azimuth=", ""), 'new_tilt': array_2.tilt.replace("tilt=", ""), 
                'mod_watt': str(customer.mod_watt).replace("0.", "").strip(), 'percent': str(total)[2:][:2] + "%",
                'ac_monthly_original': str(json_data_1).split(ch, 1)[0], 'ac_monthly_new': str(json_data_2).split(ch, 1)[0]}
 
@@ -180,39 +170,37 @@ def arrayTwo():
 def arrayThree():
     start_time = time.time()
 
-    class Array:
-        def __init__(self, ):
-            pass
+    class Array_1:
+        def __init__(self, tilt, azimuth, losses, quantity, direction):
+            self.tilt = tilt
+            self.azimuth = azimuth
+            self.losses = losses
+            self.quantity = quantity
+            self.direction = direction
+    
+    class Array_2:
+        def __init__(self, tilt, azimuth, losses, quantity, direction):
+            self.tilt = tilt
+            self.azimuth = azimuth
+            self.losses = losses
+            self.quantity = quantity
+            self.direction = direction
 
-    array = Array
-    array.original_tilt = str(tab_lookup.acell("M16").value)
-    array.new_tilt = str(tab_lookup.acell("N16").value)
-    array.original_azimuth = str(tab_lookup.acell("M17").value)
-    array.new_azimuth = str(tab_lookup.acell("N17").value)
-    array.losses_original = str(tab_lookup.acell("M18").value)
-    array.losses_new = str(tab_lookup.acell("N18").value)
-    array.quantity = int(tab_lookup.acell("M19").value)
-    array.quantity_2 = int(tab_lookup.acell("N19").value)
-    array.original_direction = str(tab_lookup.acell("M20").value)
-    array.new_direction = str(tab_lookup.acell("N20").value)
-    array.system_capacity = customer.mod_watt * array.quantity
-    array.system_capacity_2 = customer.mod_watt * array.quantity_2
+    array_1 = Array_1(str(tab_lookup.acell("M16").value), str(tab_lookup.acell("M17").value), str(tab_lookup.acell("M18").value), int(tab_lookup.acell("M19").value)
+                    , str(tab_lookup.acell("M20").value))
 
-    array.new_tilt = ("tilt=" + array.new_tilt + "&")
-    array.new_azimuth = ("azimuth=" + array.new_azimuth + "&")
-    array.original_tilt = ("tilt=" + array.original_tilt + "&")
-    array.original_azimuth = ("azimuth=" + array.original_azimuth + "&")
-    array.losses_original = ("losses=" + array.losses_original + "&")
-    array.losses_new = ("losses=" + array.losses_new + "&")
-    array.system_capacity = ("system_capacity=" + str(array.system_capacity) + "&")
-    array.system_capacity_2 = ("system_capacity=" + str(array.system_capacity_2) + "&")
+    array_2 = Array_2(str(tab_lookup.acell("N16").value), str(tab_lookup.acell("N17").value), str(tab_lookup.acell("N18").value), int(tab_lookup.acell("N19").value)
+                    , str(tab_lookup.acell("N20").value))
 
-    api_param = "&api_key="
-    old_query = customer.address + array.original_tilt + array.original_azimuth + array.losses_original + customer.module_type + customer.array_type + array.system_capacity + api_param + creds.api_key
-    new_query = customer.address + array.new_tilt + array.new_azimuth + array.losses_new + customer.module_type + customer.array_type + array.system_capacity_2 + api_param + creds.api_key
+    system_capacity_1 = customer.mod_watt * array_1.quantity
+    system_capacity_2 = customer.mod_watt * array_2.quantity
 
-    response_1 = requests.get("https://developer.nrel.gov/api/pvwatts/v6.json?" + api_param + creds.api_key + "&" + old_query)
-    response_2 = requests.get("https://developer.nrel.gov/api/pvwatts/v6.json?" + api_param + creds.api_key + "&" + new_query)
+    api_param = "&api_key=" + creds.api_key
+    old_query = (f"{api_param}&address={customer.address}&tilt={array_1.tilt}&azimuth={array_1.azimuth}&losses={array_1.losses}&module_type={customer.module_type}&array_type={customer.array_type}&system_capacity={system_capacity_1}")
+    new_query = (f"{api_param}&address={customer.address}&tilt={array_2.tilt}&azimuth={array_2.azimuth}&losses={array_2.losses}&module_type={customer.module_type}&array_type={customer.array_type}&system_capacity={system_capacity_2}")
+
+    response_1 = requests.get("https://developer.nrel.gov/api/pvwatts/v6.json?" + old_query)
+    response_2 = requests.get("https://developer.nrel.gov/api/pvwatts/v6.json?" + new_query)
 
     json_data_1 = (response_1.json())
     json_data_2 = (response_2.json())
@@ -225,9 +213,9 @@ def arrayThree():
 
     doc = DocxTemplate("TEN_PERCENT_V5.docx")
     context = {'hoa_name': customer.hoa_name, 'date': date, 'name': customer.name,
-               'quantity': array.quantity, 'old_direction': array.original_direction, 'quantity2': array.quantity_2, 'state': customer.state,
-               'old_azimuth': array.original_azimuth.replace("azimuth=", ""), 'old_tilt': array.original_tilt.replace("tilt=", ""), 'new_direction': array.new_direction,
-               'new_azimuth': array.new_azimuth.replace("azimuth=", ""), 'new_tilt': array.new_tilt.replace("tilt=", ""), 
+               'quantity': array_1.quantity, 'old_direction': array_1.direction, 'quantity2': array_2.quantity, 'state': customer.state,
+               'old_azimuth': array_1.azimuth.replace("azimuth=", ""), 'old_tilt': array_1.tilt.replace("tilt=", ""), 'new_direction': array_2.direction,
+               'new_azimuth': array_2.azimuth.replace("azimuth=", ""), 'new_tilt': array_2.tilt.replace("tilt=", ""), 
                'mod_watt': str(customer.mod_watt).replace("0.", "").strip(), 'percent': str(total)[2:][:2] + "%",
                'ac_monthly_original': str(json_data_1).split(ch, 1)[0], 'ac_monthly_new': str(json_data_2).split(ch, 1)[0]}
 
