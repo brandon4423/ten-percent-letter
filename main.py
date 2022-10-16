@@ -3,6 +3,7 @@ import creds
 import requests
 import time
 from docxtpl import DocxTemplate
+import multiprocessing as mp
 
 login = gspread.service_account(filename="service_account.json")
 sheet_name = login.open("HOA")
@@ -227,12 +228,22 @@ def arrayThree():
     print(f"Letter Three run in: {final_time} seconds")
 
 def main():
+
     if customer.array_count == 1:
-        arrayOne()
+        p1 = mp.Process(target=arrayOne(), args=())
+        p1.start()
     elif customer.array_count == 2:
-        arrayOne(), arrayTwo()
+        p1 = mp.Process(target=arrayOne(), args=())
+        p2 = mp.Process(target=arrayTwo(), args=())
+        p1.start()
+        p2.start()
     elif customer.array_count == 3:
-        arrayOne(), arrayTwo(), arrayThree()
+        p1 = mp.Process(target=arrayOne(), args=())
+        p2 = mp.Process(target=arrayTwo(), args=())
+        p3 = mp.Process(target=arrayThree(), args=())
+        p1.start()
+        p2.start()
+        p3.start()
     else:
         exit()
 
