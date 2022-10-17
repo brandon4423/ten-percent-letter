@@ -9,7 +9,7 @@ login = gspread.service_account(filename="service_account.json")
 sheet_name = login.open("HOA")
 worksheet = sheet_name.worksheet("10 Percent")
 values = worksheet.get_values("B1:F35")
-date = str(worksheet.acell("H7").value)
+date = values[21][0]
 
 ch = '.'
 
@@ -197,7 +197,7 @@ def letterThree():
                'old_azimuth': array_5.azimuth.replace("azimuth=", ""), 'old_tilt': array_5.tilt.replace("tilt=", ""), 'new_direction': array_6.direction,
                'new_azimuth': array_6.azimuth.replace("azimuth=", ""), 'new_tilt': array_6.tilt.replace("tilt=", ""), 
                'mod_watt': str(customer.mod_watt).replace("0.", "").strip(), 'percent': str(total)[2:][:2] + "%",
-               'ac_monthly_original': str(json_data_5).split(ch, 1)[0], 'ac_monthly_new': str(json_data_5).split(ch, 1)[0]}
+               'ac_monthly_original': str(json_data_5).split(ch, 1)[0], 'ac_monthly_new': str(json_data_6).split(ch, 1)[0]}
 
     doc.render(context)
     doc.save(customer.name + " Ten Percent Letter 3.docx")
