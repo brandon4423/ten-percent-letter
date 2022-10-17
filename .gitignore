@@ -4,3 +4,6 @@ creds.py
 service_account.json
 __pycache__/creds.cpython-310.pyc
 v2.py
+tenlibrary.py
+v5.py
+__pycache__/classes.cpython-39.pyc

@@ -1,5 +1,5 @@
-import gspread
 import creds
+import gspread
 import requests
 import time
 from docxtpl import DocxTemplate
@@ -7,8 +7,9 @@ import multiprocessing as mp
 
 login = gspread.service_account(filename="service_account.json")
 sheet_name = login.open("HOA")
-tab_lookup = sheet_name.worksheet("10 Percent")
-date = str(tab_lookup.acell("H7").value)
+worksheet = sheet_name.worksheet("10 Percent")
+values = worksheet.get_values("B1:F35")
+date = str(worksheet.acell("H7").value)
 
 ch = '.'
 
@@ -22,9 +23,58 @@ class Customer:
         self.array_count = array_count
         self.module_type = module_type
         self.array_type = array_type
+        
+customer = Customer(values[12][3], values[3][2], values[6][0], values[12][0].replace(" ", "%20"), float(values[9][4]), int(values[17][1]), 1, 1)
 
-customer = Customer(str(tab_lookup.acell("D7").value), str(tab_lookup.acell("D4").value), str(tab_lookup.acell("B7").value), 
-                    str(tab_lookup.acell("B13").value).replace(" ", "%20").strip(), float(tab_lookup.acell("F10").value), int(tab_lookup.acell("J2").value), "1", "1")
+class Array_1:
+    def __init__(self, tilt, azimuth, losses, quantity, direction):
+        self.tilt = tilt
+        self.azimuth = azimuth
+        self.losses = losses
+        self.quantity = quantity
+        self.direction = direction
+class Array_2:
+    def __init__(self, tilt, azimuth, losses, quantity, direction):
+        self.tilt = tilt
+        self.azimuth = azimuth
+        self.losses = losses
+        self.quantity = quantity
+        self.direction = direction
+class Array_3:
+    def __init__(self, tilt, azimuth, losses, quantity, direction):
+        self.tilt = tilt
+        self.azimuth = azimuth
+        self.losses = losses
+        self.quantity = quantity
+        self.direction = direction
+class Array_4:
+    def __init__(self, tilt, azimuth, losses, quantity, direction):
+        self.tilt = tilt
+        self.azimuth = azimuth
+        self.losses = losses
+        self.quantity = quantity
+        self.direction = direction
+class Array_5:
+    def __init__(self, tilt, azimuth, losses, quantity, direction):
+        self.tilt = tilt
+        self.azimuth = azimuth
+        self.losses = losses
+        self.quantity = quantity
+        self.direction = direction
+class Array_6:
+    def __init__(self, tilt, azimuth, losses, quantity, direction):
+        self.tilt = tilt
+        self.azimuth = azimuth
+        self.losses = losses
+        self.quantity = quantity
+        self.direction = direction
+
+array_1 = Array_1(values[16][3], values[17][3], values[18][3], int(values[19][3]), values[20][3])
+array_2 = Array_2(values[16][4], values[17][4], values[18][4], int(values[19][4]), values[20][4])
+array_3 = Array_3(values[23][3], values[24][3], values[25][3], int(values[26][3]), values[27][3])
+array_4 = Array_4(values[23][4], values[24][4], values[25][4], int(values[26][4]), values[27][4])
+array_5 = Array_5(values[30][3], values[31][3], values[32][3], int(values[33][3]), values[34][3])
+array_6 = Array_6(values[30][4], values[31][4], values[32][4], int(values[33][4]), values[34][4])
 
 if customer.state == 'TX':
     customer.state = f"""
@@ -50,40 +100,17 @@ https://leg.colorado.gov/sites/default/files/2021a_1229_signed.pdf"""
 else:
     pass
 
-def arrayOne():
+def letterOne():
     start_time = time.time()
-
-    class Array_1:
-        def __init__(self, tilt, azimuth, losses, quantity, direction):
-            self.tilt = tilt
-            self.azimuth = azimuth
-            self.losses = losses
-            self.quantity = quantity
-            self.direction = direction
-    
-    class Array_2:
-        def __init__(self, tilt, azimuth, losses, quantity, direction):
-            self.tilt = tilt
-            self.azimuth = azimuth
-            self.losses = losses
-            self.quantity = quantity
-            self.direction = direction
-
-    array_1 = Array_1(str(tab_lookup.acell("M2").value), str(tab_lookup.acell("M3").value), str(tab_lookup.acell("M4").value), int(tab_lookup.acell("M5").value)
-                    , str(tab_lookup.acell("M6").value))
-
-    array_2 = Array_2(str(tab_lookup.acell("N2").value), str(tab_lookup.acell("N3").value), str(tab_lookup.acell("N4").value), int(tab_lookup.acell("N5").value)
-                    , str(tab_lookup.acell("N6").value))
 
     system_capacity_1 = customer.mod_watt * array_1.quantity
     system_capacity_2 = customer.mod_watt * array_2.quantity
 
-    api_param = "&api_key=" + creds.api_key
-    old_query = (f"{api_param}&address={customer.address}&tilt={array_1.tilt}&azimuth={array_1.azimuth}&losses={array_1.losses}&module_type={customer.module_type}&array_type={customer.array_type}&system_capacity={system_capacity_1}")
-    new_query = (f"{api_param}&address={customer.address}&tilt={array_2.tilt}&azimuth={array_2.azimuth}&losses={array_2.losses}&module_type={customer.module_type}&array_type={customer.array_type}&system_capacity={system_capacity_2}")
+    query_1 = (f"&api_key={creds.api_key}&address={customer.address}&tilt={array_1.tilt}&azimuth={array_1.azimuth}&losses={array_1.losses}&module_type={customer.module_type}&array_type={customer.array_type}&system_capacity={system_capacity_1}")
+    query_2 = (f"&api_key={creds.api_key}&address={customer.address}&tilt={array_2.tilt}&azimuth={array_2.azimuth}&losses={array_2.losses}&module_type={customer.module_type}&array_type={customer.array_type}&system_capacity={system_capacity_2}")
 
-    response_1 = requests.get("https://developer.nrel.gov/api/pvwatts/v6.json?" + old_query)
-    response_2 = requests.get("https://developer.nrel.gov/api/pvwatts/v6.json?" + new_query)
+    response_1 = requests.get("https://developer.nrel.gov/api/pvwatts/v6.json?" + query_1)
+    response_2 = requests.get("https://developer.nrel.gov/api/pvwatts/v6.json?" + query_2)
 
     json_data_1 = (response_1.json())
     json_data_2 = (response_2.json())
@@ -107,59 +134,35 @@ def arrayOne():
 
     end_time = time.time()
     final_time = end_time - start_time
-    print(f"Letter one run in: {final_time} seconds")
+    print(f"Letter One run in: {final_time} seconds")
 
-def arrayTwo():
+def letterTwo():
     start_time = time.time()
+    system_capacity_3 = customer.mod_watt * array_3.quantity
+    system_capacity_4 = customer.mod_watt * array_4.quantity
 
-    class Array_1:
-        def __init__(self, tilt, azimuth, losses, quantity, direction):
-            self.tilt = tilt
-            self.azimuth = azimuth
-            self.losses = losses
-            self.quantity = quantity
-            self.direction = direction
-    
-    class Array_2:
-        def __init__(self, tilt, azimuth, losses, quantity, direction):
-            self.tilt = tilt
-            self.azimuth = azimuth
-            self.losses = losses
-            self.quantity = quantity
-            self.direction = direction
+    query_3 = (f"&api_key={creds.api_key}&address={customer.address}&tilt={array_3.tilt}&azimuth={array_3.azimuth}&losses={array_3.losses}&module_type={customer.module_type}&array_type={customer.array_type}&system_capacity={system_capacity_3}")
+    query_4 = (f"&api_key={creds.api_key}&address={customer.address}&tilt={array_4.tilt}&azimuth={array_4.azimuth}&losses={array_4.losses}&module_type={customer.module_type}&array_type={customer.array_type}&system_capacity={system_capacity_4}")
 
-    array_1 = Array_1(str(tab_lookup.acell("M9").value), str(tab_lookup.acell("M10").value), str(tab_lookup.acell("M11").value), int(tab_lookup.acell("M12").value)
-                    , str(tab_lookup.acell("M13").value))
+    response_3 = requests.get("https://developer.nrel.gov/api/pvwatts/v6.json?" + query_3)
+    response_4 = requests.get("https://developer.nrel.gov/api/pvwatts/v6.json?" + query_4)
 
-    array_2 = Array_2(str(tab_lookup.acell("N9").value), str(tab_lookup.acell("N10").value), str(tab_lookup.acell("N11").value), int(tab_lookup.acell("N12").value)
-                    , str(tab_lookup.acell("N13").value))
+    json_data_3 = (response_3.json())
+    json_data_4 = (response_4.json())
 
-    system_capacity_1 = customer.mod_watt * array_1.quantity
-    system_capacity_2 = customer.mod_watt * array_2.quantity
+    json_data_3 = int(json_data_3['outputs']['ac_annual'])
+    json_data_4 = int(json_data_4['outputs']['ac_annual'])
 
-    api_param = "&api_key=" + creds.api_key
-    old_query = (f"{api_param}&address={customer.address}&tilt={array_1.tilt}&azimuth={array_1.azimuth}&losses={array_1.losses}&module_type={customer.module_type}&array_type={customer.array_type}&system_capacity={system_capacity_1}")
-    new_query = (f"{api_param}&address={customer.address}&tilt={array_2.tilt}&azimuth={array_2.azimuth}&losses={array_2.losses}&module_type={customer.module_type}&array_type={customer.array_type}&system_capacity={system_capacity_2}")
-
-    response_1 = requests.get("https://developer.nrel.gov/api/pvwatts/v6.json?" + old_query)
-    response_2 = requests.get("https://developer.nrel.gov/api/pvwatts/v6.json?" + new_query)
-
-    json_data_1 = (response_1.json())
-    json_data_2 = (response_2.json())
-
-    json_data_1 = int(json_data_1['outputs']['ac_annual'])
-    json_data_2 = int(json_data_2['outputs']['ac_annual'])
-
-    difference = int(json_data_1) - int(json_data_2)
-    total = difference / int(json_data_1)
+    difference = int(json_data_3) - int(json_data_4)
+    total = difference / int(json_data_3)
 
     doc = DocxTemplate("TEN_PERCENT_V5.docx")
     context = {'hoa_name': customer.hoa_name, 'date': date, 'name': customer.name,
-               'quantity': array_1.quantity, 'old_direction': array_1.direction, 'quantity2': array_2.quantity, 'state': customer.state,
-               'old_azimuth': array_1.azimuth.replace("azimuth=", ""), 'old_tilt': array_1.tilt.replace("tilt=", ""), 'new_direction': array_2.direction,
-               'new_azimuth': array_2.azimuth.replace("azimuth=", ""), 'new_tilt': array_2.tilt.replace("tilt=", ""), 
+               'quantity': array_3.quantity, 'old_direction': array_3.direction, 'quantity2': array_4.quantity, 'state': customer.state,
+               'old_azimuth': array_3.azimuth.replace("azimuth=", ""), 'old_tilt': array_3.tilt.replace("tilt=", ""), 'new_direction': array_4.direction,
+               'new_azimuth': array_4.azimuth.replace("azimuth=", ""), 'new_tilt': array_4.tilt.replace("tilt=", ""), 
                'mod_watt': str(customer.mod_watt).replace("0.", "").strip(), 'percent': str(total)[2:][:2] + "%",
-               'ac_monthly_original': str(json_data_1).split(ch, 1)[0], 'ac_monthly_new': str(json_data_2).split(ch, 1)[0]}
+               'ac_monthly_original': str(json_data_3).split(ch, 1)[0], 'ac_monthly_new': str(json_data_4).split(ch, 1)[0]}
 
     doc.render(context)
     doc.save(customer.name + " Ten Percent Letter 2.docx")
@@ -168,57 +171,33 @@ def arrayTwo():
     final_time = end_time - start_time
     print(f"Letter Two run in: {final_time} seconds")
 
-def arrayThree():
+def letterThree():
     start_time = time.time()
+    system_capacity_5 = customer.mod_watt * array_5.quantity
+    system_capacity_6 = customer.mod_watt * array_6.quantity
 
-    class Array_1:
-        def __init__(self, tilt, azimuth, losses, quantity, direction):
-            self.tilt = tilt
-            self.azimuth = azimuth
-            self.losses = losses
-            self.quantity = quantity
-            self.direction = direction
-    
-    class Array_2:
-        def __init__(self, tilt, azimuth, losses, quantity, direction):
-            self.tilt = tilt
-            self.azimuth = azimuth
-            self.losses = losses
-            self.quantity = quantity
-            self.direction = direction
+    query_5 = (f"&api_key={creds.api_key}&address={customer.address}&tilt={array_5.tilt}&azimuth={array_5.azimuth}&losses={array_5.losses}&module_type={customer.module_type}&array_type={customer.array_type}&system_capacity={system_capacity_5}")
+    query_6 = (f"&api_key={creds.api_key}&address={customer.address}&tilt={array_6.tilt}&azimuth={array_6.azimuth}&losses={array_6.losses}&module_type={customer.module_type}&array_type={customer.array_type}&system_capacity={system_capacity_6}")
 
-    array_1 = Array_1(str(tab_lookup.acell("M16").value), str(tab_lookup.acell("M17").value), str(tab_lookup.acell("M18").value), int(tab_lookup.acell("M19").value)
-                    , str(tab_lookup.acell("M20").value))
+    response_5 = requests.get("https://developer.nrel.gov/api/pvwatts/v6.json?" + query_5)
+    response_6 = requests.get("https://developer.nrel.gov/api/pvwatts/v6.json?" + query_6)
 
-    array_2 = Array_2(str(tab_lookup.acell("N16").value), str(tab_lookup.acell("N17").value), str(tab_lookup.acell("N18").value), int(tab_lookup.acell("N19").value)
-                    , str(tab_lookup.acell("N20").value))
+    json_data_5 = (response_5.json())
+    json_data_6 = (response_6.json())
 
-    system_capacity_1 = customer.mod_watt * array_1.quantity
-    system_capacity_2 = customer.mod_watt * array_2.quantity
+    json_data_5 = int(json_data_5['outputs']['ac_annual'])
+    json_data_6 = int(json_data_6['outputs']['ac_annual'])
 
-    api_param = "&api_key=" + creds.api_key
-    old_query = (f"{api_param}&address={customer.address}&tilt={array_1.tilt}&azimuth={array_1.azimuth}&losses={array_1.losses}&module_type={customer.module_type}&array_type={customer.array_type}&system_capacity={system_capacity_1}")
-    new_query = (f"{api_param}&address={customer.address}&tilt={array_2.tilt}&azimuth={array_2.azimuth}&losses={array_2.losses}&module_type={customer.module_type}&array_type={customer.array_type}&system_capacity={system_capacity_2}")
-
-    response_1 = requests.get("https://developer.nrel.gov/api/pvwatts/v6.json?" + old_query)
-    response_2 = requests.get("https://developer.nrel.gov/api/pvwatts/v6.json?" + new_query)
-
-    json_data_1 = (response_1.json())
-    json_data_2 = (response_2.json())
-
-    json_data_1 = int(json_data_1['outputs']['ac_annual'])
-    json_data_2 = int(json_data_2['outputs']['ac_annual'])
-
-    difference = int(json_data_1) - int(json_data_2)
-    total = difference / int(json_data_1)
+    difference = int(json_data_5) - int(json_data_6)
+    total = difference / int(json_data_5)
 
     doc = DocxTemplate("TEN_PERCENT_V5.docx")
     context = {'hoa_name': customer.hoa_name, 'date': date, 'name': customer.name,
-               'quantity': array_1.quantity, 'old_direction': array_1.direction, 'quantity2': array_2.quantity, 'state': customer.state,
-               'old_azimuth': array_1.azimuth.replace("azimuth=", ""), 'old_tilt': array_1.tilt.replace("tilt=", ""), 'new_direction': array_2.direction,
-               'new_azimuth': array_2.azimuth.replace("azimuth=", ""), 'new_tilt': array_2.tilt.replace("tilt=", ""), 
+               'quantity': array_5.quantity, 'old_direction': array_5.direction, 'quantity2': array_6.quantity, 'state': customer.state,
+               'old_azimuth': array_5.azimuth.replace("azimuth=", ""), 'old_tilt': array_5.tilt.replace("tilt=", ""), 'new_direction': array_6.direction,
+               'new_azimuth': array_6.azimuth.replace("azimuth=", ""), 'new_tilt': array_6.tilt.replace("tilt=", ""), 
                'mod_watt': str(customer.mod_watt).replace("0.", "").strip(), 'percent': str(total)[2:][:2] + "%",
-               'ac_monthly_original': str(json_data_1).split(ch, 1)[0], 'ac_monthly_new': str(json_data_2).split(ch, 1)[0]}
+               'ac_monthly_original': str(json_data_5).split(ch, 1)[0], 'ac_monthly_new': str(json_data_5).split(ch, 1)[0]}
 
     doc.render(context)
     doc.save(customer.name + " Ten Percent Letter 3.docx")
@@ -228,24 +207,25 @@ def arrayThree():
     print(f"Letter Three run in: {final_time} seconds")
 
 def main():
-
     if customer.array_count == 1:
-        p1 = mp.Process(target=arrayOne(), args=())
+        p1 = mp.Process(target=letterOne(), args=())
         p1.start()
     elif customer.array_count == 2:
-        p1 = mp.Process(target=arrayOne(), args=())
-        p2 = mp.Process(target=arrayTwo(), args=())
+        p1 = mp.Process(target=letterOne(), args=())
+        p2 = mp.Process(target=letterTwo(), args=())
         p1.start()
         p2.start()
     elif customer.array_count == 3:
-        p1 = mp.Process(target=arrayOne(), args=())
-        p2 = mp.Process(target=arrayTwo(), args=())
-        p3 = mp.Process(target=arrayThree(), args=())
+        p1 = mp.Process(target=letterOne(), args=())
+        p2 = mp.Process(target=letterTwo(), args=())
+        p3 = mp.Process(target=letterThree(), args=())
         p1.start()
         p2.start()
         p3.start()
     else:
+        print(customer.array_count)
         exit()
 
 if __name__ == '__main__':
+    start_time = time.time()
     main()
