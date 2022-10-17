@@ -1,9 +1,0 @@
-Here is a short excerpt from the Texas Solar Rights that refers to this issue. “The law also 
-stipulates that the HOA may designate where the solar device should be located on a roof,
-unless a homeowner can show that the designation negatively impacts the performance
-of the solar energy device and an alternative location would increase production by
-more than 10%. To show this, the law requires that modeling tools provided by the
-National Renewable Laboratory (NREL) be used.” 
-
-While not specified by name in the law, one of NREL’s available tools that can accomplish this is called PVWatts Calculator.
-http://programs.dsireusa.org/system/program/detail/4880
