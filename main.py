@@ -132,6 +132,17 @@ def letterOne():
     doc.render(context)
     doc.save(customer.name + " Ten Percent Letter 1.docx")
 
+    doc = DocxTemplate("LETTER.docx")
+    context = {'hoa_name': customer.hoa_name, 'date': date, 'name': customer.name,
+               'quantity': array_1.quantity, 'old_direction': array_1.direction, 'quantity2': array_2.quantity, 'state': customer.state,
+               'old_azimuth': array_1.azimuth.replace("azimuth=", ""), 'old_tilt': array_1.tilt.replace("tilt=", ""), 'new_direction': array_2.direction,
+               'new_azimuth': array_2.azimuth.replace("azimuth=", ""), 'new_tilt': array_2.tilt.replace("tilt=", ""), 
+               'mod_watt': str(customer.mod_watt).replace("0.", "").strip(), 'percent': str(total)[2:][:2] + "%",
+               'ac_monthly_original': str(json_data_1).split(ch, 1)[0], 'ac_monthly_new': str(json_data_2).split(ch, 1)[0]}
+
+    doc.render(context)
+    doc.save(customer.name + " PVWatts Calculation.docx")
+
     end_time = time.time()
     final_time = end_time - start_time
     print(f"Letter One run in: {final_time} seconds")
