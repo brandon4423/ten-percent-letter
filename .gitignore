@@ -9,3 +9,4 @@ v5.py
 __pycache__/classes.cpython-39.pyc
 __pycache__/tenref.cpython-39.pyc
 *.pyc
+ice.py
