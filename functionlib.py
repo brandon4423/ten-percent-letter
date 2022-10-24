@@ -238,7 +238,7 @@ def pvletterOne():
                 'dec': monthly[23], 'dec_so': monthlyrad[23],
                 'annual': annual[1], 'annual_so': annualrad[1],
                 'lat': location[0], 'lon': location[1], 'location': main.location_address,
-                'system_capacity': str(main.system_capacity_1) + ' kW',
+                'system_capacity': str(main.system_capacity_2) + ' kW',
                 'tilt': main.values[16][4], 'azimuth': main.values[17][4], 'losses': main.values[18][4],
                 'capacity_factor': capacity[1], 'range1': ranges_low[1], 'range2': ranges_high[1]
 
@@ -336,7 +336,7 @@ def pvletterTwo():
                 'dec': monthly[11], 'dec_so': monthlyrad[11],
                 'annual': annual[0], 'annual_so': annualrad[0],
                 'lat': location[0], 'lon': location[1], 'location': main.location_address,
-                'system_capacity': str(main.system_capacity_1) + ' kW',
+                'system_capacity': str(main.system_capacity_3) + ' kW',
                 'tilt': main.values[23][3], 'azimuth': main.values[24][3], 'losses': main.values[25][3],
                 'capacity_factor': capacity[0], 'range1': ranges_low[0], 'range2': ranges_high[0]
 
@@ -361,7 +361,7 @@ def pvletterTwo():
                 'dec': monthly[23], 'dec_so': monthlyrad[23],
                 'annual': annual[1], 'annual_so': annualrad[1],
                 'lat': location[0], 'lon': location[1], 'location': main.location_address,
-                'system_capacity': str(main.system_capacity_1) + ' kW',
+                'system_capacity': str(main.system_capacity_4) + ' kW',
                 'tilt': main.values[23][4], 'azimuth': main.values[24][4], 'losses': main.values[25][4],
                 'capacity_factor': capacity[1], 'range1': ranges_low[1], 'range2': ranges_high[1]
 
@@ -459,7 +459,7 @@ def pvletterThree():
                 'dec': monthly[11], 'dec_so': monthlyrad[11],
                 'annual': annual[0], 'annual_so': annualrad[0],
                 'lat': location[0], 'lon': location[1], 'location': main.location_address,
-                'system_capacity': str(main.system_capacity_1) + ' kW',
+                'system_capacity': str(main.system_capacity_5) + ' kW',
                 'tilt': main.values[30][3], 'azimuth': main.values[31][3], 'losses': main.values[32][3],
                 'capacity_factor': capacity[0], 'range1': ranges_low[0], 'range2': ranges_high[0]
 
@@ -484,7 +484,7 @@ def pvletterThree():
                     'dec': monthly[23], 'dec_so': monthlyrad[23],
                     'annual': annual[1], 'annual_so': annualrad[1],
                     'lat': location[0], 'lon': location[1], 'location': main.location_address,
-                    'system_capacity': str(main.system_capacity_1) + ' kW',
+                    'system_capacity': str(main.system_capacity_6) + ' kW',
                     'tilt': main.values[30][4], 'azimuth': main.values[31][4], 'losses': main.values[32][4],
                     'capacity_factor': capacity[1], 'range1': ranges_low[1], 'range2': ranges_high[1]
 
