@@ -47,6 +47,7 @@ def queryThree():
         json.dump(data2, file, indent=4)
 
 def tenpercentOne():
+    
     queryOne()
     with open('pvcal1.json', 'r') as file:
         data1 = json.load(file)
